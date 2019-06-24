@@ -19,38 +19,38 @@ eo <- readRDS(file = "~/workshop/data/oecd/eo.rds")
 #' @export
 #' @importFrom shiny NS tagList
 mod_statistics_ui <- function(id, dest) {
+    
   ns <- NS(id)
-  fluidRow(
-    column(width = 6,
-           box(width = 12, 
-               selectInput(
-                 "countries",
-                 label = "Countries to compare",
-                 multiple = TRUE,
-                 choices = sort(unique(bli$LOCATION))
-               ),
-               selectInput(
-                 "indicator",
-                 label = "BLI indicator",
-                 choices = sort(unique(bli$INDICATOR))
-               )
-           )
-    ),
-    column(width = 6,
-           box(width = 12,
-               radioButtons(
-                 "gender",
-                 "Choose sex",
-                 c(
-                   All = "all",
-                   Female = "female",
-                   Male = "male"
-                 ),
-                 selected = "all"
-               )
-           ))
-  )
+  fluidPage(
+  fluidRow(column(width = 6,
+                  box(
+                    width = 12,
+                    selectInput(
+                      ns("countries"),
+                      label = "Countries to compare",
+                      multiple = TRUE,
+                      choices = sort(unique(bli$LOCATION)),
+                      selected = c("AUT", "GRC", "ITA", "ESP", "PRT")
+                    ),
+                    selectInput(ns("indicator"),
+                                label = "BLI indicator",
+                                choices = sort(unique(bli$INDICATOR)))
+                  )),
+           column(width = 6,
+                  box(
+                    width = 12,
+                    radioButtons(
+                      ns("gender"),
+                      "Choose sex",
+                      c(
+                        All = "TOT",
+                        Female = "WMN",
+                        Male = "MN"
+                      ),
+                      selected = "TOT"
+                    )
+                  ))),
   
-  
+  fluidRow(box(width = 12, plotOutput(ns("plot")))))
   
 }

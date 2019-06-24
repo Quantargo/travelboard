@@ -5,8 +5,17 @@
 #' @keywords internal
 mod_statistics_server <- function(input, output, session, dest){
   ns <- session$ns
+  
+  output$plot <- renderPlot({
 
-  updateSelectInput(session, inputId = "countries", choices = all_countries, selected = dest)
+    data <- bli %>% 
+      filter(LOCATION %in% input$countries) %>% 
+      filter(INEQUALITY == input$gender) %>% 
+      filter(INDICATOR == input$indicator)
+      
+      ggplot(data = data, aes(x = LOCATION, y = obsValue)) + geom_point()
+  })
+
 }
     
 ## To be copied in the UI
