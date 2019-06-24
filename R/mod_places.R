@@ -19,17 +19,46 @@ mod_places_ui <- function(id, dest){
   # This is just an example UI to be modified
   # Please change for your purpose
   # Do not forget to put ns() around all input ids!!!
-  tagList(
-    tags$h1(paste(dest, "Places", sep = "-")),
-    fluidRow(
-      box(title = dest, plotOutput(ns("plot1"), height = 250)),
-      
-      box(
-        title = "Controls",
-        sliderInput(ns("slider"), "Number of observations:", 1, 100, 50)
-      )
+  tabBox(width = 12,
+    tabPanel("Restaurants",
+             fluidRow(column(width = 8,
+                             google_mapOutput("map")), 
+                      column(width = 4,
+                             sliderInput(inputId = "pricelevel",
+                                         label = "Price Level",
+                                         min = 1, max = 3,value = c(1,3)),
+                             sliderInput(inputId = "rating",
+                                         label = "Rating",
+                                         min = 4.3, max = 5.0,value = c(4,5),
+                                         step = 0.1),
+                             sliderInput(inputId = "numberofratings",
+                                         label = "Number of Ratings",
+                                         min = 1, max = 3,value = c(1,3))))
+    ),
+    tabPanel("Bars",
+             fluidRow(column(width = 6,"plot"), column(width = 6,"slideinputs"))
+    ),
+    tabPanel("Museums",
+             fluidRow(column(width = 6,"plot"), column(width = 6,"slideinputs"))
+    ),
+    tabPanel("Cinemas",
+             fluidRow(column(width = 6,"plot"), column(width = 6,"slideinputs"))
+    ),
+    tabPanel("Discos",
+             fluidRow(column(width = 6,"plot"), column(width = 6,"slideinputs"))
     )
   )
+  # tagList(
+  #   tags$h1(paste(dest, "Places", sep = "-")),
+  #   fluidRow(
+  #     box(title = dest, plotOutput(ns("plot1"), height = 250)),
+  #     
+  #     box(
+  #       title = "Controls",
+  #       sliderInput(ns("slider"), "Number of observations:", 1, 100, 50)
+  #     )
+  #   )
+  # )
 }
     
 # Module Server
@@ -41,13 +70,20 @@ mod_places_ui <- function(id, dest){
 mod_places_server <- function(input, output, session, dest){
   ns <- session$ns
   
-  # This is just an example Server to be modified
-  # Please change for your purpose
-  histdata <- rnorm(500)
-  output$plot1 <- renderPlot({
-    data <- histdata[seq_len(input$slider)]
-    hist(data, main = dest())
+  key <- "AIzaSyBCGvNSks4_NvBcAwdRLw9hXM0J0RkQhQg"
+  
+  data <- reactive({
+    restaurants <- read_rds(paste0("~/workshop/data/google_places/",tolower(dest),".rds"))[["Restaurants"]]
+    restaurants$info <- paste0("<b>Restaurant Name: </b>", restaurants()$name)
+    restaurants
   })
+  
+  map <- google_map(data = data, key = key) %>%
+    add_markers(lat = "lat", lon = "lng", info_window = "info") %>%
+    add_heatmap(lat = "lat", lon = "lng", weight = "user_ratings_total", option_radius = 0.15, legend = TRUE)
+  
+  output$map <- renderGoogle_map(map)
+  
 }
     
 ## To be copied in the UI
