@@ -22,7 +22,8 @@ mod_places_ui <- function(id, dest){
   tabBox(width = 12,
     tabPanel("Restaurants",
              fluidRow(column(width = 8,
-                             google_mapOutput("map")), 
+                             #DT::dataTableOutput(ns("table"))),
+                             google_mapOutput(outputId = ns("map"))), 
                       column(width = 4,
                              sliderInput(inputId = "pricelevel",
                                          label = "Price Level",
@@ -73,17 +74,20 @@ mod_places_server <- function(input, output, session, dest){
   key <- "AIzaSyBCGvNSks4_NvBcAwdRLw9hXM0J0RkQhQg"
   
   data <- reactive({
-    restaurants <- read_rds(paste0("~/workshop/data/google_places/",tolower(dest),".rds"))[["Restaurants"]]
-    restaurants$info <- paste0("<b>Restaurant Name: </b>", restaurants()$name)
-    restaurants
+    read_rds(paste0("~/workshop/data/google_places/",tolower(dest()),".rds"))[["Restaurants"]]
   })
   
-  map <- google_map(data = data, key = key) %>%
-    add_markers(lat = "lat", lon = "lng", info_window = "info") %>%
-    add_heatmap(lat = "lat", lon = "lng", weight = "user_ratings_total", option_radius = 0.15, legend = TRUE)
+  #data <- read_rds(paste0("~/workshop/data/google_places/",tolower("vienna"),".rds"))[["Restaurants"]]
+ 
   
-  output$map <- renderGoogle_map(map)
-  
+  # output$table <- DT::renderDataTable({
+  #   data = DT::datatable(data())
+  # })
+
+  output$map <- renderGoogle_map(google_map(data = data(), key = key) %>%
+                                   add_markers(lat = "lat", lon = "lng", info_window = "info") %>%
+                                   add_heatmap(lat = "lat", lon = "lng", weight = "user_ratings_total", option_radius = 0.15, legend = TRUE))
+
 }
     
 ## To be copied in the UI
