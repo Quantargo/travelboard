@@ -21,7 +21,8 @@ search_dataset("Economic Outlook No 105", data = dataset_list) # EO (Forecasts f
 search_dataset("Population", data = dataset_list) # RPOP (Population Statistics by Sex, Age)
 search_dataset("Purchasing Power Parity", data = dataset_list) # PPPGDP (PPP, Exchange Rates)
 
-bli <- readRDS(file = "data/oecd/bli.rds")
+#bli <- readRDS(file = "data/oecd/bli.rds")
+bli <- readRDS(file = "~/workshop/data/oecd/bli.rds")
 df <- bli %>% 
   filter(INEQUALITY == "TOT", LOCATION %in% countries)
 ggplot(df) + geom_bar(aes(x = LOCATION, y = obsValue, fill = LOCATION), stat = "identity") + 
@@ -36,14 +37,14 @@ ggplot() + geom_bar(aes(x = LOCATION, y = obsValue, fill = LOCATION), stat = "id
 # Get PPP values, exchange rates, etc.
 # Database inventory: http://www.oecd.org/sdd/na/44221974.pdf
 # See also https://www.oecd.org/sdd/prices-ppp/purchasingpowerparities-frequentlyaskedquestionsfaqs.htm
-pppgdp <- readRDS(file = "data/oecd/pppgdp.rds")
+pppgdp <- readRDS(file = "~/workshop/data/oecd/pppgdp.rds")
 dat_filter <- pppgdp %>% 
   filter(LOCATION %in% countries, UNIT == "NATUSD")
 ggplot(dat_filter) + 
   geom_line(aes(obsTime, obsValue, group = LOCATION, color = LOCATION))
 
 # https://www.oecd.org/eco/outlook/EO104_Database_Inventory.pdf
-eo <- readRDS(file = "data/oecd/eo.rds")
+eo <- readRDS(file = "~/workshop/data/oecd/eo.rds")
 # Plot (projected) unemployment rate (UNR), 
 eo %>%
   mutate(obsTime = as.integer(obsTime), obsValue = obsValue / 100) %>%
