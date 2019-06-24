@@ -6,16 +6,21 @@
 mod_statistics_server <- function(input, output, session, dest){
   ns <- session$ns
   
-  output$plot <- renderPlot({
+  output$plot <- renderPlotly({
 
     data <- bli %>% 
       filter(LOCATION %in% input$countries) %>% 
       filter(INEQUALITY == input$gender) %>% 
       filter(INDICATOR == input$indicator)
       
-      ggplot(data = data, aes(x = LOCATION, y = obsValue)) + geom_point()
+    plot_ly(data, x = ~LOCATION, y = ~obsValue, type = "scatter" ,mode = "markers", color = ~data$LOCATION, size = data$obsValue)
+      
+      
   })
+  
 
+    
+ 
 }
     
 ## To be copied in the UI
