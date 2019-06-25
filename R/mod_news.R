@@ -38,11 +38,13 @@ mod_news_ui <- function(id, dest){
     ),
     fluidRow( box(title="The most recent Twitter picture from this destination" ,imageOutput(ns("image"))) ,
               
-              box( title = paste('Most Recent News from',dest),DT::dataTableOutput(ns("newstable"))
-              )
-    )
+              box(title="Cloud with most important words", wordcloud2Output(ns("wordcloud")))
+              ),
     
-    
+  fluidRow(
+  box( title = paste('Most Recent News from',dest),DT::dataTableOutput(ns("newstable"))
+  )
+  )
   )
 }
 
@@ -111,8 +113,7 @@ mod_news_server <- function(input, output, session, dest){
     # Return a list containing the filename
     list(src = fname,
          contentType = 'image/jpg',
-         width = 200,
-         height = 200
+         width = '100%'
     )
   })
   
@@ -175,6 +176,37 @@ mod_news_server <- function(input, output, session, dest){
     # Add a legend
     legend(formattwr(r,1)[1,1], 2000, legend=coln,
            col=colvec, lty=3, cex=0.8)  
+    
+  })
+  output$wordcloud <- renderWordcloud2({
+    
+    
+    ## Most important words
+    
+    tweet_words <- dest_data() %>% select(screen_name, created_at, text) %>% 
+      unnest_tokens(word, text) %>%
+      count(word, sort=T)
+    my_stop_words <- stop_words %>% select(-lexicon) %>% 
+      bind_rows(data.frame(word = c("https", "t.co", "rt", "amp","4yig9gzh5t","fyy2ceydhi","78","fakenews")))
+    tweet_words_interesting <- tweet_words %>% anti_join(my_stop_words, by = "word")
+    
+    top_50 <- tweet_words_interesting %>% 
+      group_by(word) %>% 
+      tally(sort=TRUE) %>% 
+      slice(1:50)
+    
+    top_50$n<-floor((top_50$n)^(1/3))
+    
+    top_50 %>% mutate(word = reorder(word, n, function(n) -n)) %>%
+      ggplot() + geom_bar(aes(word, n), stat = "identity") + 
+      theme(axis.text.x = element_text(angle = 60, hjust = 1)) + 
+      xlab("")
+    
+    
+    ## Create word cloud
+    
+    wordcloud2(top_50, color="random-light", shape="cardioide", size = .4, shuffle=T, rotateRatio = sample(c(1:100) / 100))
+    
     
   })
   
