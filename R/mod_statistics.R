@@ -23,7 +23,7 @@ mod_statistics_ui <- function(id, dest) {
   ns <- NS(id)
   fluidPage(
     fluidRow(
-      box(width = 12, title = "Choose indicator and coungtries to compare",
+      box(width = 12, title = "Choose indicator and countries to compare",
         column(width = 6, selectInput(ns("countries"), label = "Countries to compare", multiple = TRUE, choices = sort(unique(bli$LOCATION)), selected = c("AUT", "GRC", "ITA", "ESP", "PRT"))),
         column(width = 6, selectInput(ns("indicator"), label = "Choose indicator", choices = sort(unique(bli$INDICATOR))))
       )
