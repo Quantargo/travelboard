@@ -17,6 +17,8 @@
 #' @import tidyverse
 #' @import dplyr
 #' @import ggplot2
+#' @import wordcloud2
+#' @import rtweet
 
 
 mod_news_ui <- function(id, dest){
@@ -36,13 +38,16 @@ mod_news_ui <- function(id, dest){
       box(title="Hot or Not - destination trending based on #tweets" ,plotOutput(ns("plot2")))
       
     ),
+   
     fluidRow( box(title="The most recent Twitter picture from this destination" ,imageOutput(ns("image"))) ,
               
-              box(title="Cloud with most important words", wordcloud2Output(ns("wordcloud")))
+              box(title="Cloud with most important words", plotOutput(ns("wordcloud")))
               ),
-    
+    fluidRow(h1(paste('Most Recent News from',dest))),
   fluidRow(
-  box( title = paste('Most Recent News from',dest),DT::dataTableOutput(ns("newstable"))
+    column(  width = 12,
+      title = paste('Most Recent News from',dest),DT::dataTableOutput(ns("newstable")
+  )
   )
   )
   )
@@ -80,17 +85,17 @@ mod_news_server <- function(input, output, session, dest){
   })
   
   
-  observe({
-    d <- dest_data()
-    updateSelectInput(session,"source",choices=dplyr::distinct(d[, c("source")],source))
+ # observe({
+ #   d <- dest_data()
+  #  updateSelectInput(session,"source",choices=dplyr::distinct(d[, c("source")],source))
     
-  })
+ # })
   
   ## Plot for the most recent News from NYT
   
   #  
   output$newstable <- DT::renderDataTable({
-    nytimes = dest_nytimes()$data[, c("headline.main",'pub_date'), drop = FALSE]
+    nytimes = dest_nytimes()$data[, c("headline.main",'pub_date','abstract','web_url'), drop = FALSE]
     arranged_data <-  dplyr::arrange(nytimes,desc(pub_date))
     DT::datatable(data = arranged_data,
                   options = list(pageLength = 10),
@@ -99,6 +104,7 @@ mod_news_server <- function(input, output, session, dest){
   })
   
   output$image <- renderImage({
+  
     recent<-
       dest_data()  %>% 
       as.data.frame %>% 
@@ -113,14 +119,14 @@ mod_news_server <- function(input, output, session, dest){
     # Return a list containing the filename
     list(src = fname,
          contentType = 'image/jpg',
-         width = '100%'
+         width = '100%',
+         height = '100%'
     )
   })
   
   output$plot1 <- renderPlot({
     
     bing_lex <- get_sentiments("bing")
-    
     sentiment_words <- dest_data() %>% select(status_id, screen_name, created_at, text) %>% 
       unnest_tokens(word, text) %>% 
       inner_join(bing_lex, by = "word") 
@@ -178,7 +184,7 @@ mod_news_server <- function(input, output, session, dest){
            col=colvec, lty=3, cex=0.8)  
     
   })
-  output$wordcloud <- renderWordcloud2({
+  output$wordcloud <- renderPlot({
     
     
     ## Most important words
@@ -186,7 +192,7 @@ mod_news_server <- function(input, output, session, dest){
     tweet_words <- dest_data() %>% select(screen_name, created_at, text) %>% 
       unnest_tokens(word, text) %>%
       count(word, sort=T)
-    my_stop_words <- stop_words %>% select(-lexicon) %>% 
+    my_stop_words <- tidytext::stop_words %>% select(-lexicon) %>% 
       bind_rows(data.frame(word = c("https", "t.co", "rt", "amp","4yig9gzh5t","fyy2ceydhi","78","fakenews")))
     tweet_words_interesting <- tweet_words %>% anti_join(my_stop_words, by = "word")
     
@@ -204,9 +210,7 @@ mod_news_server <- function(input, output, session, dest){
     
     
     ## Create word cloud
-    
-    wordcloud2(top_50, color="random-light", shape="cardioide", size = .4, shuffle=T, rotateRatio = sample(c(1:100) / 100))
-    
+    wordcloud::wordcloud(top_50[, 1, drop=TRUE], top_50[, 2, drop=TRUE])#,color="random-light", shape="cardioide", size = .4, shuffle=T, rotateRatio = sample(c(1:100) / 100))
     
   })
   

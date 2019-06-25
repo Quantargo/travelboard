@@ -17,7 +17,7 @@ Imports:
 	rtweet,
     tidyverse,
     tidytext,
-    wordcloud2,
+    wordcloud,
     tm
 Remotes: 
     Thinkr-open/golem
