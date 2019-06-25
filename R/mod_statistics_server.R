@@ -13,7 +13,7 @@ mod_statistics_server <- function(input, output, session, dest){
   output$plot <- renderPlot({
     bli %>%
       filter(LOCATION %in% input$countries) %>%
-#      filter(INEQUALITY == input$gender) %>%
+      filter(INEQUALITY %in% c("TOT", "MN", "WMN")) %>%
       filter(INDICATOR == input$indicator) %>%
       ggplot(aes(x = LOCATION, y = obsValue, color = INEQUALITY)) +
       geom_point(alpha = 0.4) +

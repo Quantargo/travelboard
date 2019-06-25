@@ -1,7 +1,7 @@
 # Load data ---------------------------------------------------------------
 bli <- readRDS(file = "~/workshop/data/oecd/bli.rds")
-pppgdp <- readRDS(file = "~/workshop/data/oecd/pppgdp.rds")
-eo <- readRDS(file = "~/workshop/data/oecd/eo.rds")
+p#ppgdp <- readRDS(file = "~/workshop/data/oecd/pppgdp.rds")
+#eo <- readRDS(file = "~/workshop/data/oecd/eo.rds")
 
 # Module UI
 
