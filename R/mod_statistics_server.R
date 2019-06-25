@@ -6,16 +6,22 @@
 mod_statistics_server <- function(input, output, session, dest){
   ns <- session$ns
   
-  output$plot <- plotly::renderPlotly({
+  output$plot <- renderPlot({
 
-    data <- bli %>% 
-      filter(LOCATION %in% input$countries) %>% 
-      filter(INEQUALITY == input$gender) %>% 
-      filter(INDICATOR == input$indicator)
+    browser
     
-    plotly::plot_ly(data, x = ~LOCATION, y = ~obsValue, type = "scatter" ,mode = "markers", color = ~LOCATION, size = data$obsValue)
-      
-      
+    bli %>%
+      filter(LOCATION %in% input$countries) %>%
+#      filter(INEQUALITY == input$gender) %>%
+      filter(INDICATOR == input$indicator) %>%
+      ggplot(aes(x = LOCATION, y = obsValue, fill = INEQUALITY)) +
+      geom_point(alpha = 0.4) +
+      labs(title = input$indicator, 
+           subtitle = paste(input$countries, collapse = ", "),
+           caption = bli_indicator[bli_indicator$Indicator == input$indicator, 2]) +
+      theme_minimal()
+    
+
   })
   
 

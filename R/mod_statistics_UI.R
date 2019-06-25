@@ -51,6 +51,6 @@ mod_statistics_ui <- function(id, dest) {
                     )
                   ))),
   
- fluidRow(box(width = 12, plotly::plotlyOutput(ns("plot")))))
+ fluidRow(box(width = 12, plotOutput(ns("plot")))))
   
 }
