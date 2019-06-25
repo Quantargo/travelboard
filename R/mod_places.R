@@ -79,7 +79,11 @@ mod_places_server <- function(input, output, session, dest){
     leaflet(data()) %>%
       addTiles() %>% 
       addMarkers(lng=data()$lng, 
-                 lat=data()$lat, popup=data()$name, 
+                 lat=data()$lat, 
+                 popup=paste0("Name: ",data()$name,"<br/>",
+                              "Rating: ",data()$rating,"<br/>",
+                              "Number of Reviews: ",data()$user_ratings_total,"<br/>",
+                              "Price Level: ",data()$price_level), 
                  clusterOptions = markerClusterOptions())
   })
   output$averagerating <- renderValueBox({
