@@ -30,7 +30,7 @@ mod_statistics_ui <- function(id, dest) {
     ),
     fluidRow(
       box(width = 12, title = "Indicator decription", 
-        textOutput(ns("ind_descr"))
+        uiOutput(ns("ind_descr"))
       )
     ),
    fluidRow(
