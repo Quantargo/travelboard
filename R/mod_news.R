@@ -13,8 +13,12 @@
 #' @keywords internal
 #' @export 
 #' @importFrom shiny NS tagList 
+#' @import tidytext
+#' @import tidyverse
+#' @import dplyr
+#' @import ggplot2
 
-library(dplyr)
+
 mod_news_ui <- function(id, dest){
   ns <- NS(id)
 
