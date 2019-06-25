@@ -24,24 +24,19 @@ mod_news_ui <- function(id, dest){
   tagList(
     tags$h1(paste(dest, "Twitter News", sep = "-")),
     fluidRow(
-      box( title='Source',
-           selectInput(inputId='source', label = 'Select the tweeet source' ,
+            box( title='Source',selectInput(inputId='source', label = 'Select the tweeet source' ,
                        choices=c('All')
                        )
            ),
-      box(title = dest, plotOutput(ns("plot1"), height = 250)),
-      
-      box(
-        title = "Controls",
-        sliderInput(ns("slider"), "Number of observations:", 1, 100, 50)
-      ),
-      box( title = paste('Most Recent News from',dest),
-           
-             DT::dataTableOutput(ns("newstable"))
-           
-           
-            )
-    )
+           box(title="Sentiment of the tweets from this destination" ,plotOutput(ns("plot1")))
+    ),
+    fluidRow( box(title="Tho most recent Twitter picture from this destination" ,imageOutput(ns("image"))) ,
+
+              box( title = paste('Most Recent News from',dest),DT::dataTableOutput(ns("newstable"))
+              )
+              )
+     
+   
   )
 }
     
@@ -95,7 +90,45 @@ mod_news_server <- function(input, output, session, dest){
 
  })
   
+ output$image <- renderImage({
+   recent<-
+     dest_data()  %>% 
+     as.data.frame %>% 
+     dplyr::filter(!is.na(dest_data()$media_url)) %>%
+     arrange(desc(created_at)) %>%
+     slice(1)
+   pic_url<- as.character(recent$media_url)
+   
+   fname <- tempfile(fileext = '.jpg')
+   download.file(pic_url, fname, mode = 'wb')
+   
+   # Return a list containing the filename
+   list(src = fname,
+        contentType = 'image/jpg',
+        width = 200,
+        height = 200
+   )
+ })
  
+ output$plot1 <- renderPlot({
+   
+   bing_lex <- get_sentiments("bing")
+   
+   sentiment_words <- dest_data() %>% select(status_id, screen_name, created_at, text) %>% 
+     unnest_tokens(word, text) %>% 
+     inner_join(bing_lex, by = "word") 
+   
+   sentiment_words %>% 
+     mutate(created_at_day = lubridate::as_date(lubridate::round_date(created_at, "day")),
+            sentiment_num = ifelse(sentiment == "positive", 1, -1), 
+            count = n()) %>%
+     ggplot() + 
+     geom_bar(aes(created_at_day, fill = sentiment), stat = "count") + 
+     facet_wrap(~sentiment, ncol = 1)
+   
+   
+   
+ })
  
   
 }
