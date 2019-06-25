@@ -22,35 +22,22 @@ mod_statistics_ui <- function(id, dest) {
     
   ns <- NS(id)
   fluidPage(
-  fluidRow(column(width = 6,
-                  box(
-                    width = 12,
-                    selectInput(
-                      ns("countries"),
-                      label = "Countries to compare",
-                      multiple = TRUE,
-                      choices = sort(unique(bli$LOCATION)),
-                      selected = c("AUT", "GRC", "ITA", "ESP", "PRT")
-                    ),
-                    selectInput(ns("indicator"),
-                                label = "BLI indicator",
-                                choices = sort(unique(bli$INDICATOR)))
-                  )),
-           column(width = 6,
-                  box(
-                    width = 12,
-                    radioButtons(
-                      ns("gender"),
-                      "Choose sex",
-                      c(
-                        All = "TOT",
-                        Female = "WMN",
-                        Male = "MN"
-                      ),
-                      selected = "TOT"
-                    )
-                  ))),
-  
- fluidRow(box(width = 12, plotOutput(ns("plot")))))
+    fluidRow(
+      box(width = 12, title = "Choose indicator and coungtries to compare",
+        column(width = 6, selectInput(ns("countries"), label = "Countries to compare", multiple = TRUE, choices = sort(unique(bli$LOCATION)), selected = c("AUT", "GRC", "ITA", "ESP", "PRT"))),
+        column(width = 6, selectInput(ns("indicator"), label = "Choose indicator", choices = sort(unique(bli$INDICATOR))))
+      )
+    ),
+    fluidRow(
+      box(width = 12, title = "Indicator decription", 
+        textOutput(ns("ind_descr"))
+      )
+    ),
+   fluidRow(
+     box(width = 12, 
+         plotOutput(ns("plot"))
+     )
+    )
+  )
   
 }

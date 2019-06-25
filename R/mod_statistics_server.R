@@ -6,22 +6,19 @@
 mod_statistics_server <- function(input, output, session, dest){
   ns <- session$ns
   
+  output$ind_descr <- renderText({
+    str_wrap(bli_indicator[bli_indicator$Indicator == input$indicator, 2], width = 120)
+  })
+  
   output$plot <- renderPlot({
-
-    browser
-    
     bli %>%
       filter(LOCATION %in% input$countries) %>%
 #      filter(INEQUALITY == input$gender) %>%
       filter(INDICATOR == input$indicator) %>%
-      ggplot(aes(x = LOCATION, y = obsValue, fill = INEQUALITY)) +
+      ggplot(aes(x = LOCATION, y = obsValue, color = INEQUALITY)) +
       geom_point(alpha = 0.4) +
-      labs(title = input$indicator, 
-           subtitle = paste(input$countries, collapse = ", "),
-           caption = bli_indicator[bli_indicator$Indicator == input$indicator, 2]) +
+      labs(title = input$indicator) +      
       theme_minimal()
-    
-
   })
   
 
