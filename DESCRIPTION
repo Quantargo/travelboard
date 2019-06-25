@@ -16,7 +16,10 @@ Imports:
     shinydashboard,
     googleway,
     tidyr,
-    readr
+    readr,
+    dplyr,
+    leaflet,
+    leaflet.extras
 Remotes: 
     Thinkr-open/golem
 RoxygenNote: 6.1.1
