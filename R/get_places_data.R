@@ -26,7 +26,8 @@ get_places_data_all<-function(destination, type_vector, filter_variables, filter
     if(!"user_ratings_total" %in% names(data)){
       data$user_ratings_total <- rep(NA,nrow(data)) 
     }
-    allData <- rbind(data[,c("lat","lng","name","price_level","user_ratings_total","rating")],allData)
+    data$type <- rep(type,nrow(data))
+    allData <- rbind(data[,c("lat","lng","name","price_level","user_ratings_total","rating","type")],allData)
   }
   allData
 }
