@@ -130,7 +130,8 @@ mod_news_server <- function(input, output, session, dest){
              count = n()) %>%
       ggplot() + 
       geom_bar(aes(created_at_day, fill = sentiment), stat = "count") + 
-      facet_wrap(~sentiment, ncol = 1)
+      facet_wrap(~sentiment, ncol = 1)+
+      labs(x='Date',y='# of tweets')
     
     
     
