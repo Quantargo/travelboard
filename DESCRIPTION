@@ -14,7 +14,8 @@ Imports:
     glue,
     htmltools,
     shinydashboard,
-    plotly
+    plotly,
+    dplyr
 Remotes: 
     Thinkr-open/golem
 RoxygenNote: 6.1.1

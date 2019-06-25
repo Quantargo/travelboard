@@ -12,8 +12,6 @@ mod_statistics_server <- function(input, output, session, dest){
       filter(LOCATION %in% input$countries) %>% 
       filter(INEQUALITY == input$gender) %>% 
       filter(INDICATOR == input$indicator)
-      
-    browser()
     
     plotly::plot_ly(data, x = ~LOCATION, y = ~obsValue, type = "scatter" ,mode = "markers", color = ~LOCATION, size = data$obsValue)
       
