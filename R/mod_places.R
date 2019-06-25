@@ -32,7 +32,7 @@ mod_places_ui <- function(id, dest){
       column(width = 4,
              sliderInput(inputId = ns("pricelevel"),
                          label = "Price Level",
-                         min = 1, max = 5,
+                         min = 0, max = 5,
                          value = c(1,3),
                          step = 1),
              sliderInput(inputId = ns("rating"),
@@ -75,7 +75,8 @@ mod_places_server <- function(input, output, session, dest){
     req(input$selected_type)
     get_places_data(dest,input$selected_type[1],
                     c("price_level","rating","user_ratings_total"),
-                    c(input$pricelevel[1],input$rating[1],input$numberofratings[1]),c(input$pricelevel[2],input$rating[2],input$numberofratings[2]) )
+                    c(input$pricelevel[1],input$rating[1],input$numberofratings[1]),
+                    c(input$pricelevel[2],input$rating[2],ifelse(input$numberofratings[2]<10000,input$numberofratings[2],Inf) ) )
   })
   
   output$map <- renderLeaflet({
@@ -101,7 +102,7 @@ mod_places_server <- function(input, output, session, dest){
   
   output$averageprice <- renderValueBox({
     valueBox(
-      round(mean(data()$price_level,na.rm = TRUE),1), "Average price level", 
+      round(mean(data()$price_level[data()$price_level != 0],na.rm = TRUE),1), "Average price level", 
       icon = icon("euro-sign"),
       color = "blue"
     )
