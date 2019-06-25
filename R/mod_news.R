@@ -28,10 +28,10 @@ mod_news_ui <- function(id, dest){
   tagList(
     tags$h1(paste(dest, "Twitter News", sep = "-")),
     fluidRow(
-            box( title='Source',selectInput(inputId='source', label = 'Select the tweeet source' ,
-                       choices=c('All')
-                       )
-           ),
+          #  box( title='Source',selectInput(inputId='source', label = 'Select the tweeet source' ,
+          #             choices=c('All')
+         #              )
+          # ),
            box(title="Sentiment of the tweets from this destination" ,plotOutput(ns("plot1")))
     ),
     fluidRow( box(title="Tho most recent Twitter picture from this destination" ,imageOutput(ns("image"))) ,
