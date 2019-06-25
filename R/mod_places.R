@@ -23,7 +23,7 @@ mod_places_ui <- function(id, dest){
       checkboxGroupInput(inputId = ns("selected_type"),
                          label = "Select Places",
                          choices = c("Restaurants", "Bars", "Cinemas","Disco","Museums"),
-                         selected = "Restaurants")
+                         selected = "Restaurants",inline = TRUE)
     ),
     fluidRow(
       fluidRow(column(width = 8,
@@ -66,10 +66,6 @@ mod_places_server <- function(input, output, session, dest){
   
   ns <- session$ns
   key <- "AIzaSyBCGvNSks4_NvBcAwdRLw9hXM0J0RkQhQg"
-  # # 
-  # data <- reactive({
-  #   read_rds(paste0("~/workshop/data/google_places/",tolower(dest()),".rds"))[["Restaurants"]]
-  # })
   
   data <- reactive({
     req(input$selected_type)
@@ -77,10 +73,6 @@ mod_places_server <- function(input, output, session, dest){
                         c("price_level","rating","user_ratings_total"),
                         c(input$pricelevel[1],input$rating[1],input$numberofratings[1]),
                         c(input$pricelevel[2],input$rating[2],ifelse(input$numberofratings[2]<10000,input$numberofratings[2],Inf) ) )
-  #   get_places_data(dest,input$selected_type[1],
-  #                   c("price_level","rating","user_ratings_total"),
-  #                   c(input$pricelevel[1],input$rating[1],input$numberofratings[1]),
-  #                   c(input$pricelevel[2],input$rating[2],ifelse(input$numberofratings[2]<10000,input$numberofratings[2],Inf) ) )
 })
   
   output$map <- renderLeaflet({
