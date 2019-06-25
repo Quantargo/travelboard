@@ -36,7 +36,7 @@ mod_news_ui <- function(id, dest){
       box(title="Hot or Not - destination trending based on #tweets" ,plotOutput(ns("plot2")))
       
     ),
-    fluidRow( box(title="Tho most recent Twitter picture from this destination" ,imageOutput(ns("image"))) ,
+    fluidRow( box(title="The most recent Twitter picture from this destination" ,imageOutput(ns("image"))) ,
               
               box( title = paste('Most Recent News from',dest),DT::dataTableOutput(ns("newstable"))
               )
@@ -136,7 +136,7 @@ mod_news_server <- function(input, output, session, dest){
     
   })
   
-  files <- list.files(path = "~/travelboard/workshop/data/twitter/", pattern = "\\.rds$", full.names = TRUE)
+  files <- list.files(path = "~/workshop/data/twitter/", pattern = "\\.rds$", full.names = TRUE)
   files <- files[regexpr("_",files)<0]
   
   coln <- gsub(".rds","",files) 
