@@ -13,7 +13,8 @@ Imports:
     attempt,
     glue,
     htmltools,
-    shinydashboard
+    shinydashboard,
+    plotly
 Remotes: 
     Thinkr-open/golem
 RoxygenNote: 6.1.1

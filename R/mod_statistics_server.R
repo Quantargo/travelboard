@@ -6,14 +6,14 @@
 mod_statistics_server <- function(input, output, session, dest){
   ns <- session$ns
   
-  output$plot <- renderPlotly({
+  output$plot <- plotly::renderPlotly({
 
     data <- bli %>% 
       filter(LOCATION %in% input$countries) %>% 
       filter(INEQUALITY == input$gender) %>% 
       filter(INDICATOR == input$indicator)
       
-    plot_ly(data, x = ~LOCATION, y = ~obsValue, type = "scatter" ,mode = "markers", color = ~data$LOCATION, size = data$obsValue)
+    plotly::plot_ly(data, x = ~LOCATION, y = ~obsValue, type = "scatter" ,mode = "markers", color = ~data$LOCATION, size = data$obsValue)
       
       
   })
