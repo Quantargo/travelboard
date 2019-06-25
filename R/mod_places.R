@@ -41,7 +41,7 @@ mod_places_ui <- function(id, dest){
                          value = c(4,5),
                          step = 0.1),
              sliderInput(inputId = ns("numberofratings"),
-                         label = "Number of Ratings",
+                         label = "Number of Reviews",
                          min = 1, max = 10000,
                          value = c(1,5000)),
              uiOutput(outputId = "slideroutput"))),
@@ -66,18 +66,22 @@ mod_places_server <- function(input, output, session, dest){
   
   ns <- session$ns
   key <- "AIzaSyBCGvNSks4_NvBcAwdRLw9hXM0J0RkQhQg"
-  # 
-  data <- reactive({
-    read_rds(paste0("~/workshop/data/google_places/",tolower(dest()),".rds"))[["Restaurants"]]
-  })
+  # # 
+  # data <- reactive({
+  #   read_rds(paste0("~/workshop/data/google_places/",tolower(dest()),".rds"))[["Restaurants"]]
+  # })
   
   data <- reactive({
     req(input$selected_type)
-    get_places_data(dest,input$selected_type[1],
-                    c("price_level","rating","user_ratings_total"),
-                    c(input$pricelevel[1],input$rating[1],input$numberofratings[1]),
-                    c(input$pricelevel[2],input$rating[2],ifelse(input$numberofratings[2]<10000,input$numberofratings[2],Inf) ) )
-  })
+    get_places_data_all(dest,input$selected_type,
+                        c("price_level","rating","user_ratings_total"),
+                        c(input$pricelevel[1],input$rating[1],input$numberofratings[1]),
+                        c(input$pricelevel[2],input$rating[2],ifelse(input$numberofratings[2]<10000,input$numberofratings[2],Inf) ) )
+  #   get_places_data(dest,input$selected_type[1],
+  #                   c("price_level","rating","user_ratings_total"),
+  #                   c(input$pricelevel[1],input$rating[1],input$numberofratings[1]),
+  #                   c(input$pricelevel[2],input$rating[2],ifelse(input$numberofratings[2]<10000,input$numberofratings[2],Inf) ) )
+})
   
   output$map <- renderLeaflet({
     leaflet(data()) %>%
@@ -87,30 +91,35 @@ mod_places_server <- function(input, output, session, dest){
                  clusterOptions = markerClusterOptions())
   })
   output$averagerating <- renderValueBox({
+    value <- round(mean(data()$rating),1)
     valueBox(
-      round(mean(data()$rating),1), "Average Rating", icon = icon("smile"),
+      ifelse(is.na(value),0,value), "Average Rating", icon = icon("smile"),
       color = "yellow"
     )
   })
   
   output$numberofobjects <- renderValueBox({
+    value <- nrow(data())
     valueBox(
-      nrow(data()), "Number of places", icon = icon("map-marked"),
+      ifelse(is.na(value),0,value), "Number of Places", icon = icon("map-marked"),
       color = "purple"
     )
   })
   
   output$averageprice <- renderValueBox({
+    value <- round(mean(data()$price_level[data()$price_level != 0],na.rm = TRUE),1)
     valueBox(
-      round(mean(data()$price_level[data()$price_level != 0],na.rm = TRUE),1), "Average price level", 
+      ifelse(is.na(value),0,value), 
+      "Average Price Level", 
       icon = icon("euro-sign"),
       color = "blue"
     )
   })
   
   output$numberofreviews <- renderValueBox({
+    value <- round(mean(data()$user_ratings_total,na.rm = TRUE),0)
     valueBox(
-      round(mean(data()$user_ratings_total,na.rm = TRUE),0), "Average number of reviews", icon = icon("thumbs-up", lib = "glyphicon"),
+      ifelse(is.na(value),0,value), "Average Number of Reviews", icon = icon("thumbs-up", lib = "glyphicon"),
       color = "fuchsia"
     )
   })

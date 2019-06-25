@@ -12,3 +12,21 @@ get_places_data<-function(destination, type, filter_variables, filter_min, filte
   }
   data
 }
+
+get_places_data_all<-function(destination, type_vector, filter_variables, filter_min, filter_max){
+  allData <- data.frame()
+  for( type in type_vector){
+    data <- get_places_data(destination, type, filter_variables, filter_min, filter_max)
+    if(!"price_level" %in% names(data)){
+      data$price_level <- rep(NA,nrow(data)) 
+    }
+    if(!"rating" %in% names(data)){
+      data$rating <- rep(NA,nrow(data)) 
+    }
+    if(!"user_ratings_total" %in% names(data)){
+      data$user_ratings_total <- rep(NA,nrow(data)) 
+    }
+    allData <- rbind(data[,c("lat","lng","name","price_level","user_ratings_total","rating")],allData)
+  }
+  allData
+}
