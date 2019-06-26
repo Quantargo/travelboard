@@ -21,7 +21,7 @@ app_ui <- function(destinations = c("Crete", "Lisbon", "Mallorca", "Rome", "Vien
       dashboardBody(
         # Boxes need to be put in a row (or column)
         uiOutput("ui")
-      )
+      ), skin='red'
     )
   )
 }

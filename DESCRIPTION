@@ -14,7 +14,20 @@ Imports:
     glue,
     htmltools,
     shinydashboard,
-    dplyr
+	  rtweet,
+    tidyverse,
+    tidytext,
+    wordcloud,
+    tm,
+    leaflet,
+    owmr,
+    rnoaa,
+    ggplot2,
+    dplyr,
+    tidyverse,
+    rvest,
+    xml2,
+    stringr
 Remotes: 
     Thinkr-open/golem
 RoxygenNote: 6.1.1
