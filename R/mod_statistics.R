@@ -1,6 +1,7 @@
 # Load data ---------------------------------------------------------------
+
 bli <- readRDS(file = "~/workshop/data/oecd/bli.rds")
-p#ppgdp <- readRDS(file = "~/workshop/data/oecd/pppgdp.rds")
+#ppgdp <- readRDS(file = "~/workshop/data/oecd/pppgdp.rds")
 #eo <- readRDS(file = "~/workshop/data/oecd/eo.rds")
 
 # Module UI
@@ -48,6 +49,7 @@ mod_statistics_ui <- function(id, dest) {
 #' @rdname mod_statistics
 #' @export
 #' @keywords internal
+#' @importFrom forcats fct_reorder
 mod_statistics_server <- function(input, output, session, dest){
   ns <- session$ns
   
@@ -56,7 +58,7 @@ mod_statistics_server <- function(input, output, session, dest){
   })
   
   output$ind_descr <- renderUI({
-    em(bli_indicator[bli_indicator$Indicator == input$indicator, 2])
+    em(bli[bli$INDICATOR == input$indicator, 2])
   })
   
   output$plot <- renderPlot({
@@ -86,10 +88,6 @@ mod_statistics_server <- function(input, output, session, dest){
             axis.text.x = element_blank())
     
   })
-  
-  
-  
-  
 }
 
 ## To be copied in the UI

@@ -130,9 +130,9 @@ mod_weather_server <- function(input, output, session, dest){
   output$map <- renderLeaflet({leaflet() %>% 
                                 addTiles() %>% 
 
-                                 add_owm_tiles(layer_name = owm_layers$Temperature_new, data = cities()) %>% 
+                                add_owm_tiles(layer_name = owmr::owm_layers$Temperature_new, data = cities()) %>% 
                                 add_weather(cities, long(), lat()) %>% 
-                                addProviderTiles(providers$OpenWeatherMap.Clouds, options = providerTileOptions(apiKey=apikey)) %>% 
+                                addProviderTiles(leaflet::providers$OpenWeatherMap.Clouds, options = providerTileOptions(apiKey=apikey)) %>% 
                                 addMarkers(long(), lat(), data = find_city(dest()))%>%
                                 setView(long(), lat(), zoom = 9)
    

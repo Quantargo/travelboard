@@ -125,7 +125,7 @@ mod_airbnb_server <- function(input, output, session, dest){
   
   output$map1 <- renderLeaflet({  
     leaflet() %>% 
-      addProviderTiles(providers$Hydda.Full) %>% 
+      addProviderTiles(leaflet::providers$Hydda.Full) %>% 
       addMarkers(lng=dt_filtered()$longitude, 
                  lat=dt_filtered()$latitude, popup=dt_filtered()$name, 
                  clusterOptions = markerClusterOptions(), 
