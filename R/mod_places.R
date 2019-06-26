@@ -1,5 +1,5 @@
 # Module UI
-  
+
 #' @title   mod_places_ui and mod_places_server
 #' @description  A shiny Module.
 #'
@@ -13,46 +13,114 @@
 #' @keywords internal
 #' @export 
 #' @importFrom shiny NS tagList 
+#' @import dplyr leaflet leaflet.extras readr 
+
 mod_places_ui <- function(id, dest){
   ns <- NS(id)
   
-  # This is just an example UI to be modified
-  # Please change for your purpose
-  # Do not forget to put ns() around all input ids!!!
-  tagList(
-    tags$h1(paste(dest, "Places", sep = "-")),
+  fluidPage(
     fluidRow(
-      box(title = dest, plotOutput(ns("plot1"), height = 250)),
-      
-      box(
-        title = "Controls",
-        sliderInput(ns("slider"), "Number of observations:", 1, 100, 50)
+      checkboxGroupInput(inputId = ns("selected_type"),
+                         label = "Select Places",
+                         choices = c("Restaurants", "Bars", "Cinemas","Disco","Museums"),
+                         selected = "Restaurants",inline = TRUE)
+    ),
+    fluidRow(
+      fluidRow(column(width = 8,
+                      leafletOutput(outputId = ns("map"))
+      ), 
+      column(width = 4,
+             sliderInput(inputId = ns("pricelevel"),
+                         label = "Price Level",
+                         min = 0, max = 5,
+                         value = c(0,5),
+                         step = 1),
+             sliderInput(inputId = ns("rating"),
+                         label = "Rating",
+                         min = 1, max = 5,
+                         value = c(1,5),
+                         step = 0.1),
+             sliderInput(inputId = ns("numberofratings"),
+                         label = "Number of Reviews",
+                         min = 1, max = 10000,
+                         value = c(1,10000)),
+             uiOutput(outputId = "slideroutput"))),
+      fluidRow(
+        br(),
+        valueBoxOutput(outputId = ns("averagerating"),width = 2),
+        valueBoxOutput(outputId = ns("numberofobjects"),width = 2),
+        valueBoxOutput(outputId = ns("averageprice"),width = 2),
+        valueBoxOutput(outputId = ns("numberofreviews"),width = 2)
       )
     )
   )
 }
-    
+
 # Module Server
-    
+
 #' @rdname mod_places
 #' @export
 #' @keywords internal
-    
+
 mod_places_server <- function(input, output, session, dest){
-  ns <- session$ns
   
-  # This is just an example Server to be modified
-  # Please change for your purpose
-  histdata <- rnorm(500)
-  output$plot1 <- renderPlot({
-    data <- histdata[seq_len(input$slider)]
-    hist(data, main = dest())
+  ns <- session$ns
+  key <- "AIzaSyBCGvNSks4_NvBcAwdRLw9hXM0J0RkQhQg"
+  
+  data <- reactive({
+    req(input$selected_type)
+    get_places_data_all(dest,input$selected_type,
+                        c("price_level","rating","user_ratings_total"),
+                        c(input$pricelevel[1],input$rating[1],input$numberofratings[1]),
+                        c(input$pricelevel[2],input$rating[2],ifelse(input$numberofratings[2]<10000,input$numberofratings[2],Inf) ) )
+})
+  
+  output$map <- renderLeaflet({
+    leaflet(data()) %>%
+      addTiles() %>% 
+      addMarkers(lng=data()$lng, 
+                 lat=data()$lat, 
+                 popup=paste0("Name: ",data()$name,"<br/>",
+                              "Rating: ",data()$rating,"<br/>",
+                              "Number of Reviews: ",data()$user_ratings_total,"<br/>",
+                              "Price Level: ",data()$price_level,"<br/>",
+                              "Type: ",data()$type), 
+                 clusterOptions = markerClusterOptions())
   })
+  output$averagerating <- renderValueBox({
+    value <- round(mean(data()$rating),1)
+    valueBox(
+      ifelse(is.na(value),0,value), "Average Rating", icon = icon("smile"),
+      color = "yellow"
+    )
+  })
+  
+  output$numberofobjects <- renderValueBox({
+    value <- nrow(data())
+    valueBox(
+      ifelse(is.na(value),0,value), "Number of Places", icon = icon("map-marked"),
+      color = "purple"
+    )
+  })
+  
+  output$averageprice <- renderValueBox({
+    value <- round(mean(data()$price_level[data()$price_level != 0],na.rm = TRUE),1)
+    valueBox(
+      ifelse(is.na(value),0,value), 
+      "Average Price Level", 
+      icon = icon("euro-sign"),
+      color = "blue"
+    )
+  })
+  
+  output$numberofreviews <- renderValueBox({
+    value <- round(mean(data()$user_ratings_total,na.rm = TRUE),0)
+    valueBox(
+      ifelse(is.na(value),0,value), "Average Number of Reviews", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "fuchsia"
+    )
+  })
+  
+  
+  
 }
-    
-## To be copied in the UI
-# mod_places_ui("places_ui_1")
-    
-## To be copied in the server
-# callModule(mod_places_server, "places_ui_1")
- 
