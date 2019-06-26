@@ -69,7 +69,7 @@ mod_airbnb_server <- function(input, output, session, dest){
   
   # Loads the selected data
   dt_country <- reactive({
-    dt_imported <- readRDS(paste0("~/workshop/data/airbnb/", tolower(dest()), ".rds"))
+    dt_imported <- readRDS(paste0(get_prefix(), "/data/airbnb/", tolower(dest()), ".rds"))
     dt_imported <- dt_imported %>% mutate(price = as.numeric(sub("$", "", .data$price, fixed = TRUE)))
   })
   

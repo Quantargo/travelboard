@@ -138,7 +138,7 @@ mod_weather_server <- function(input, output, session, dest){
 
   
   output$plot2 <- renderPlot({
-    fname <- sprintf("~/workshop/data/weather/%s.rds", tolower(dest()))
+    fname <- sprintf("%s/data/weather/%s.rds", get_prefix(), tolower(dest()))
     dat <- readRDS(fname)
     dat %>% 
       mutate(date = as.Date(date)) %>% 
@@ -150,22 +150,22 @@ mod_weather_server <- function(input, output, session, dest){
   })
   
   output$infobox <- renderUI({
-    currtemp <- readRDS("~/workshop/data/weather/currtemp.rds")
+    currtemp <- readRDS(file.path(get_prefix(), "data/weather/currtemp.rds"))
     infoBox(title="Current Temp", value=currtemp[[dest()]]$temp, color = "green" ,icon = icon("info-circle"))
   })
   
   output$infobox2 <- renderUI({
-    currtemp <- readRDS("~/workshop/data/weather/currtemp.rds")
+    currtemp <- readRDS(file.path(get_prefix(), "data/weather/currtemp.rds"))
     infoBox(title="Min Temp", value=currtemp[[dest()]]$temp_min , color = "light-blue" ,icon = icon("minus"))
   })
   
   output$infobox3 <- renderUI({
-    currtemp <- readRDS("~/workshop/data/weather/currtemp.rds")
+    currtemp <- readRDS(file.path(get_prefix(), "data/weather/currtemp.rds"))
     infoBox(title="Max Temp", value=currtemp[[dest()]]$temp_max, color = "yellow" ,icon = icon("sun"))
   })
   
   output$infobox4 <- renderUI({
-    currtemp <- readRDS("~/workshop/data/weather/currtemp.rds")
+    currtemp <- readRDS(file.path(get_prefix(), "data/weather/currtemp.rds"))
     infoBox(title="Weather today ", value=currtemp[[dest()]]$weather_description,color = "aqua" ,icon = icon("users"))
   })
 }

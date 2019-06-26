@@ -74,13 +74,13 @@ mod_news_server <- function(input, output, session, dest){
   
   # Select the right NY Times file based on the destination selected from the user----------
   dest_nytimes <- reactive({
-    readRDS( paste0('~/workshop/data/twitter/',tolower(dest()), '_nytimes.rds')   )
+    readRDS( paste0(get_prefix(), '/data/twitter/',tolower(dest()), '_nytimes.rds')   )
     
   })
   
   # Select the right data file based on the destination selected from the user----------
   dest_data <- reactive({
-    readRDS( paste0('~/workshop/data/twitter/',tolower(dest()), '.rds')   )
+    readRDS( paste0(get_prefix(), '/data/twitter/',tolower(dest()), '.rds')   )
     
   })
   
@@ -143,8 +143,10 @@ mod_news_server <- function(input, output, session, dest){
     
     
   })
-  
-  files <- list.files(path = "~/workshop/data/twitter/", pattern = "\\.rds$", full.names = TRUE)
+
+  files <- list.files(path = file.path(get_prefix(), "data/twitter/"), 
+                      pattern = "\\.rds$", 
+                      full.names = TRUE)
   files <- files[regexpr("_",files)<0]
   
   coln <- gsub(".rds","",files) 

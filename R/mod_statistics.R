@@ -1,6 +1,5 @@
 # Load data ---------------------------------------------------------------
-
-bli <- readRDS(file = "~/workshop/data/oecd/bli.rds")
+#bli <- readRDS(file = "~/workshop/data/oecd/bli.rds")
 #ppgdp <- readRDS(file = "~/workshop/data/oecd/pppgdp.rds")
 #eo <- readRDS(file = "~/workshop/data/oecd/eo.rds")
 
@@ -19,14 +18,16 @@ bli <- readRDS(file = "~/workshop/data/oecd/bli.rds")
 #' @keywords internal
 #' @export
 #' @importFrom shiny NS tagList
-mod_statistics_ui <- function(id, dest) {
+mod_statistics_ui <- function(id, dest, 
+                              locations = c('AUS','AUT','BEL','BRA','CAN','CHE','CHL','COL','CZE','DEU','DNK','ESP','EST','FIN','FRA','GBR','GRC','HUN','IRL','ISL','ISR','ITA','JPN','KOR','LTU','LUX','LVA','MEX','NLD','NOR','NZL','OECD','POL','PRT','RUS','SVK','SVN','SWE','TUR','USA','ZAF'),
+                              indicators = c('CG_SENG','CG_VOTO','EQ_AIRP','EQ_WATER','ES_EDUA','ES_EDUEX','ES_STCS','HO_BASE','HO_HISH','HO_NUMR','HS_LEB','HS_SFRH','IW_HADI','IW_HNFW','JE_EMPL','JE_LMIS','JE_LTUR','JE_PEARN','PS_FSAFEN','PS_REPH','SC_SNTWS','SW_LIFS','WL_EWLH','WL_TNOW')) {
     
   ns <- NS(id)
   fluidPage(
     fluidRow(
       box(width = 12, title = "Choose indicator and countries to compare",
-        column(width = 6, selectInput(ns("countries"), label = "Countries to compare", multiple = TRUE, choices = sort(unique(bli$LOCATION)), selected = c("AUT", "GRC", "ITA", "ESP", "PRT"))),
-        column(width = 6, selectInput(ns("indicator"), label = "Choose indicator", choices = sort(unique(bli$INDICATOR))))
+        column(width = 6, selectInput(ns("countries"), label = "Countries to compare", multiple = TRUE, choices = locations, selected = c("AUT", "GRC", "ITA", "ESP", "PRT"))),
+        column(width = 6, selectInput(ns("indicator"), label = "Choose indicator", choices = indicators))
       )
     ),
     fluidRow(
@@ -53,6 +54,9 @@ mod_statistics_ui <- function(id, dest) {
 #' @importFrom rlang .data
 mod_statistics_server <- function(input, output, session, dest){
   ns <- session$ns
+  bli <- readRDS(file = file.path(get_prefix(), "data/oecd/bli.rds"))
+  
+  
   
   output$wikiLink <- renderUI({
     div(a(href = paste0("https://en.wikipedia.org/wiki/", dest()), "find out more on wikipedia"), align = "right")

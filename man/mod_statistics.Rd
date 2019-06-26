@@ -5,7 +5,16 @@
 \alias{mod_statistics_server}
 \title{mod_statistics_ui and mod_statistics_server}
 \usage{
-mod_statistics_ui(id, dest)
+mod_statistics_ui(id, dest, locations = c("AUS", "AUT", "BEL", "BRA",
+  "CAN", "CHE", "CHL", "COL", "CZE", "DEU", "DNK", "ESP", "EST", "FIN",
+  "FRA", "GBR", "GRC", "HUN", "IRL", "ISL", "ISR", "ITA", "JPN", "KOR",
+  "LTU", "LUX", "LVA", "MEX", "NLD", "NOR", "NZL", "OECD", "POL", "PRT",
+  "RUS", "SVK", "SVN", "SWE", "TUR", "USA", "ZAF"),
+  indicators = c("CG_SENG", "CG_VOTO", "EQ_AIRP", "EQ_WATER", "ES_EDUA",
+  "ES_EDUEX", "ES_STCS", "HO_BASE", "HO_HISH", "HO_NUMR", "HS_LEB",
+  "HS_SFRH", "IW_HADI", "IW_HNFW", "JE_EMPL", "JE_LMIS", "JE_LTUR",
+  "JE_PEARN", "PS_FSAFEN", "PS_REPH", "SC_SNTWS", "SW_LIFS", "WL_EWLH",
+  "WL_TNOW"))
 
 mod_statistics_server(input, output, session, dest)
 }
