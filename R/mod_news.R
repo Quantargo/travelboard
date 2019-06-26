@@ -7,20 +7,17 @@
 #' @param input internal
 #' @param output internal
 #' @param session internal
-#'
+#' 
 #' @rdname mod_news
-#'
 #' @keywords internal
-#' @export 
 #' @importFrom shiny NS tagList 
 #' @import tidytext
 #' @import tidyverse
 #' @import dplyr
 #' @import ggplot2
 #' @import wordcloud2
-#' @import rtweet
-
-
+#' @importFrom lubridate as_date round_date
+#' @export 
 mod_news_ui <- function(id, dest){
   ns <- NS(id)
   
@@ -56,9 +53,12 @@ mod_news_ui <- function(id, dest){
 # Module Server
 
 #' @rdname mod_news
-#' @export
 #' @keywords internal
-
+#' @importFrom stats rnorm reorder
+#' @importFrom graphics hist plot lines legend
+#' @importFrom rlang .data
+#' @importFrom utils download.file
+#' @export
 mod_news_server <- function(input, output, session, dest){
   ns <- session$ns
   
@@ -96,7 +96,7 @@ mod_news_server <- function(input, output, session, dest){
   #  
   output$newstable <- DT::renderDataTable({
     nytimes = dest_nytimes()$data[, c("headline.main",'pub_date','abstract','web_url'), drop = FALSE]
-    arranged_data <-  dplyr::arrange(nytimes,desc(pub_date))
+    arranged_data <-  dplyr::arrange(nytimes,desc(.data$pub_date))
     DT::datatable(data = arranged_data,
                   options = list(pageLength = 10),
                   rownames = FALSE)
@@ -109,7 +109,7 @@ mod_news_server <- function(input, output, session, dest){
       dest_data()  %>% 
       as.data.frame %>% 
       dplyr::filter(!is.na(dest_data()$media_url)) %>%
-      arrange(desc(created_at)) %>%
+      arrange(desc(.data$created_at)) %>%
       slice(1)
     pic_url<- as.character(recent$media_url)
     
@@ -127,17 +127,17 @@ mod_news_server <- function(input, output, session, dest){
   output$plot1 <- renderPlot({
     
     bing_lex <- get_sentiments("bing")
-    sentiment_words <- dest_data() %>% select(status_id, screen_name, created_at, text) %>% 
-      unnest_tokens(word, text) %>% 
+    sentiment_words <- dest_data() %>% select(.data$status_id, .data$screen_name, .data$created_at, .data$text) %>% 
+      unnest_tokens(word, .data$text) %>% 
       inner_join(bing_lex, by = "word") 
     
     sentiment_words %>% 
-      mutate(created_at_day = lubridate::as_date(lubridate::round_date(created_at, "day")),
-             sentiment_num = ifelse(sentiment == "positive", 1, -1), 
+      mutate(created_at_day = as_date(round_date(.data$created_at, "day")),
+             sentiment_num = ifelse(.data$sentiment == "positive", 1, -1), 
              count = n()) %>%
       ggplot() + 
-      geom_bar(aes(created_at_day, fill = sentiment), stat = "count") + 
-      facet_wrap(~sentiment, ncol = 1)+
+      geom_bar(aes(.data$created_at_day, fill = .data$sentiment), stat = "count") + 
+      facet_wrap(~.data$sentiment, ncol = 1)+
       labs(x='Date',y='# of tweets')
     
     
@@ -189,10 +189,10 @@ mod_news_server <- function(input, output, session, dest){
     
     ## Most important words
     
-    tweet_words <- dest_data() %>% select(screen_name, created_at, text) %>% 
-      unnest_tokens(word, text) %>%
+    tweet_words <- dest_data() %>% select(.data$screen_name, .data$created_at, .data$text) %>% 
+      unnest_tokens(word, .data$text) %>%
       count(word, sort=T)
-    my_stop_words <- tidytext::stop_words %>% select(-lexicon) %>% 
+    my_stop_words <- tidytext::stop_words %>% select(-.data$lexicon) %>% 
       bind_rows(data.frame(word = c("https", "t.co", "rt", "amp","4yig9gzh5t","fyy2ceydhi","78","fakenews")))
     tweet_words_interesting <- tweet_words %>% anti_join(my_stop_words, by = "word")
     

@@ -19,11 +19,9 @@
 #' @import leaflet.extras
 #' @import googleway
 #' @import rgdal
-#' @import rvest
 #' @import xml2
 #' @import stringr
-#' 
-
+#' @importFrom rvest html_text
 mod_airbnb_ui <- function(id, dest){
   ns <- NS(id)
 
@@ -65,13 +63,14 @@ mod_airbnb_ui <- function(id, dest){
 #' @rdname mod_airbnb
 #' @export
 #' @keywords internal
+#' @importFrom rlang .data
 mod_airbnb_server <- function(input, output, session, dest){
   ns <- session$ns
   
   # Loads the selected data
   dt_country <- reactive({
     dt_imported <- readRDS(paste0("~/workshop/data/airbnb/", tolower(dest()), ".rds"))
-    dt_imported <- dt_imported %>% mutate(price = as.numeric(sub("$", "", price, fixed = TRUE)))
+    dt_imported <- dt_imported %>% mutate(price = as.numeric(sub("$", "", .data$price, fixed = TRUE)))
   })
   
   # Country level price data 
@@ -82,8 +81,8 @@ mod_airbnb_server <- function(input, output, session, dest){
   dt_filtered <- reactive({
     
     dt_filtered <- filter(dt_country(), 
-                          price >= input$input_price[1] & price <= input$input_price[2],
-                          beds >= input$input_beds[1] & beds <= input$input_beds[2])  %>% 
+                          .data$price >= input$input_price[1] & .data$price <= input$input_price[2],
+                          .data$beds >= input$input_beds[1] & .data$beds <= input$input_beds[2])  %>% 
                             filter(eval(parse(text = ifelse(is.null(input$input_city),TRUE, 
                                               paste0("city %in% c(",'"',paste0(input$input_city,collapse='","'), '")')))))
   })
@@ -142,8 +141,8 @@ mod_airbnb_server <- function(input, output, session, dest){
     lat <- click$lat
     lng <- click$lng
     url2 <- dt_filtered() %>% 
-      filter(latitude == lat, longitude == lng) %>% 
-      select(listing_url) %>%
+      filter(.data$latitude == lat, .data$longitude == lng) %>% 
+      select(.data$listing_url) %>%
       paste()
     
 
@@ -169,9 +168,9 @@ mod_airbnb_server <- function(input, output, session, dest){
   output$price_distr <- renderPlot({
     
     dt_price <- rbind(total_price(), data.frame(sample = "Selected", price = dt_filtered()$price))
-    means    <- dt_price %>% group_by(sample) %>% summarize(mean_price = mean(price, na.rm = TRUE))
+    means    <- dt_price %>% group_by(sample) %>% summarize(mean_price = mean(.data$price, na.rm = TRUE))
     
-    ggplot(dt_price, aes(x = price, group = sample, color = sample, fill = sample)) + 
+    ggplot(dt_price, aes(x = .data$price, group = sample, color = sample, fill = sample)) + 
       geom_density(alpha = 0.4) + 
       labs(title = "Price distribution",
            x     = "Price / Night", 

@@ -1,5 +1,3 @@
-
-
 # Module UI
 
 #' @title   mod_weather_ui and mod_weather_server
@@ -64,7 +62,7 @@ mod_weather_ui <- function(id, dest){
 #' @rdname mod_weather
 #' @export
 #' @keywords internal
-
+#' @importFrom rlang .data
 mod_weather_server <- function(input, output, session, dest){
   ns <- session$ns
   
@@ -147,8 +145,8 @@ mod_weather_server <- function(input, output, session, dest){
       filter(date >= input$datefrom) %>%
       filter(date <= input$dateto) %>%
       ggplot() + 
-      geom_line(aes(date, value, color = datatype, group = datatype)) +  
-      facet_wrap(~datatype, scales = "free_y", ncol = 1)
+      geom_line(aes(date, .data$value, color = .data$datatype, group = .data$datatype)) +  
+      facet_wrap(~.data$datatype, scales = "free_y", ncol = 1)
   })
   
   output$infobox <- renderUI({
