@@ -18,7 +18,20 @@ Imports:
     readr,
     dplyr,
     leaflet,
-    leaflet.extras
+    leaflet.extras,
+	  rtweet,
+    tidyverse,
+    tidytext,
+    wordcloud,
+    tm,
+    owmr,
+    rnoaa,
+    ggplot2,
+    dplyr,
+    tidyverse,
+    rvest,
+    xml2,
+    stringr
 Remotes: 
     Thinkr-open/golem
 RoxygenNote: 6.1.1
